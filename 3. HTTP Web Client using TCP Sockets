@@ -1,0 +1,69 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <netdb.h>
+
+int main()
+{
+    int sock;
+    struct sockaddr_in server;
+    struct hostent *host;
+    char request[1024];
+    char buffer[4096];
+    int bytes;
+
+    char *hostname = "example.com";
+
+    host = gethostbyname(hostname);
+
+    if (host == NULL)
+    {
+        printf("Host not found\n");
+        return 1;
+    }
+
+    sock = socket(AF_INET, SOCK_STREAM, 0);
+
+    if (sock < 0)
+    {
+        perror("Socket");
+        return 1;
+    }
+
+    server.sin_family = AF_INET;
+    server.sin_port = htons(80);
+
+    memcpy(&server.sin_addr,
+           host->h_addr,
+           host->h_length);
+
+    if (connect(sock,
+                (struct sockaddr *)&server,
+                sizeof(server)) < 0)
+    {
+        perror("Connection failed");
+        return 1;
+    }
+
+    sprintf(request,
+            "GET / HTTP/1.1\r\n"
+            "Host: %s\r\n"
+            "Connection: close\r\n\r\n",
+            hostname);
+
+    send(sock, request, strlen(request), 0);
+
+    printf("HTTP Response:\n\n");
+
+    while ((bytes = recv(sock, buffer, sizeof(buffer) - 1, 0)) > 0)
+    {
+        buffer[bytes] = '\0';
+        printf("%s", buffer);
+    }
+
+    close(sock);
+
+    return 0;
+}
