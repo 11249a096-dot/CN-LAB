@@ -1,0 +1,11 @@
+arp
+dns
+tcp
+udp
+icmp
+http
+tls
+ip.addr == 192.168.1.1
+ip.dst == 8.8.8.8
+tcp.flags.syn == 1
+tcp.flags.syn == 1 && tcp.flags.ack == 1
