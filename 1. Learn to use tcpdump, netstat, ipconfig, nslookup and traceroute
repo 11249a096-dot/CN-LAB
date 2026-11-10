@@ -1,0 +1,9 @@
+ipconfig
+ipconfig /all
+
+netstat -an
+netstat -ano
+
+nslookup google.com
+
+tracert google.com
