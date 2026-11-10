@@ -1,0 +1,65 @@
+#include <stdio.h>
+#include <string.h>
+
+void xorOperation(char *a, char *b, int n)
+{
+    for (int i = 0; i < n; i++)
+    {
+        a[i] = (a[i] == b[i]) ? '0' : '1';
+    }
+}
+
+void crc(char data[], char generator[], char remainder[])
+{
+    int dataLen = strlen(data);
+    int genLen = strlen(generator);
+
+    char temp[100];
+
+    strcpy(temp, data);
+
+    for (int i = 0; i <= dataLen - genLen; i++)
+    {
+        if (temp[i] == '1')
+        {
+            xorOperation(&temp[i],
+                         generator,
+                         genLen);
+        }
+    }
+
+    strcpy(remainder,
+           &temp[dataLen - genLen + 1]);
+}
+
+int main()
+{
+    char data[100];
+    char generator[100];
+    char appended[100];
+    char remainder[100];
+
+    printf("Enter data: ");
+    scanf("%s", data);
+
+    printf("Enter generator: ");
+    scanf("%s", generator);
+
+    int dataLen = strlen(data);
+    int genLen = strlen(generator);
+
+    strcpy(appended, data);
+
+    for (int i = 0; i < genLen - 1; i++)
+        strcat(appended, "0");
+
+    crc(appended, generator, remainder);
+
+    printf("\nCRC: %s\n", remainder);
+
+    strcat(data, remainder);
+
+    printf("Transmitted Codeword: %s\n", data);
+
+    return 0;
+}
